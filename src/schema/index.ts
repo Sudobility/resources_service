@@ -43,9 +43,9 @@ export function createResourcesSchema(schema: any) {
       index("resources_app_locale_idx").on(
         table.app,
         table.locale,
-        table.sort_order,
+        table.sort_order
       ),
-    ],
+    ]
   );
 
   return { resources };

@@ -43,7 +43,7 @@ export class ResourcesForwarder {
     this.path = config.path ?? "/resources";
     if (!this.fetchImpl) {
       throw new Error(
-        "ResourcesForwarder: no fetch available; pass config.fetchImpl",
+        "ResourcesForwarder: no fetch available; pass config.fetchImpl"
       );
     }
   }
@@ -69,11 +69,13 @@ export class ResourcesForwarder {
       });
       if (!res.ok) {
         throw new Error(
-          `resources upstream responded ${res.status} ${res.statusText}`,
+          `resources upstream responded ${res.status} ${res.statusText}`
         );
       }
       const body = (await res.json()) as ResourceListResponse;
-      return { resources: Array.isArray(body?.resources) ? body.resources : [] };
+      return {
+        resources: Array.isArray(body?.resources) ? body.resources : [],
+      };
     } finally {
       clearTimeout(timer);
     }
