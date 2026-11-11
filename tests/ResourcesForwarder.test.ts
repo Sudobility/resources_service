@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { ResourcesForwarder } from "../src/forwarder/index.js";
-import type { ResourceListResponse } from "../src/types/index.js";
+import type { ResourceDataResponse } from "../src/types/index.js";
 
 function jsonResponse(body: unknown, init: Partial<Response> = {}): Response {
   return {
@@ -11,26 +11,33 @@ function jsonResponse(body: unknown, init: Partial<Response> = {}): Response {
   } as unknown as Response;
 }
 
-const sample: ResourceListResponse = {
-  resources: [
+const sample: ResourceDataResponse = {
+  sections: [
     {
       id: "11111111-1111-1111-1111-111111111111",
-      app: "music",
-      locale: "en",
-      title: "Learn Theory",
-      text: "Music theory basics",
-      iconUrl: "https://example.com/favicon.png",
-      url: "https://example.com/theory",
+      title: "Sheet music",
       sortOrder: 0,
-      enabled: true,
       createdAt: "2026-01-01T00:00:00.000Z",
       updatedAt: "2026-01-01T00:00:00.000Z",
+      resources: [
+        {
+          id: "22222222-2222-2222-2222-222222222222",
+          title: "MuseScore",
+          text: "Community sheet music",
+          iconUrl: "https://example.com/favicon.png",
+          url: "https://musescore.com",
+          sortOrder: 0,
+          enabled: true,
+          createdAt: "2026-01-01T00:00:00.000Z",
+          updatedAt: "2026-01-01T00:00:00.000Z",
+        },
+      ],
     },
   ],
 };
 
 describe("ResourcesForwarder", () => {
-  it("pins app and locale as query params and returns the parsed body", async () => {
+  it("requests /resources/{app}/{lang}/data and returns the parsed body", async () => {
     const fetchImpl = vi.fn().mockResolvedValue(jsonResponse(sample));
     const forwarder = new ResourcesForwarder({
       baseUrl: "https://api.sudobility.com/",
@@ -38,30 +45,25 @@ describe("ResourcesForwarder", () => {
       fetchImpl,
     });
 
-    const result = await forwarder.list("en");
+    const result = await forwarder.data("en");
 
     expect(result).toEqual(sample);
-    const calledUrl = new URL(fetchImpl.mock.calls[0][0] as string);
-    expect(calledUrl.origin + calledUrl.pathname).toBe(
-      "https://api.sudobility.com/resources",
+    expect(fetchImpl.mock.calls[0][0]).toBe(
+      "https://api.sudobility.com/resources/music/en/data",
     );
-    expect(calledUrl.searchParams.get("app")).toBe("music");
-    expect(calledUrl.searchParams.get("locale")).toBe("en");
   });
 
-  it("omits locale when not supplied", async () => {
-    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse(sample));
+  it("url-encodes app and lang", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ sections: [] }));
     const forwarder = new ResourcesForwarder({
       baseUrl: "https://api.sudobility.com",
       app: "svgr",
       fetchImpl,
     });
-
-    await forwarder.list();
-
-    const calledUrl = new URL(fetchImpl.mock.calls[0][0] as string);
-    expect(calledUrl.searchParams.get("app")).toBe("svgr");
-    expect(calledUrl.searchParams.has("locale")).toBe(false);
+    await forwarder.data("zh-hant");
+    expect(fetchImpl.mock.calls[0][0]).toBe(
+      "https://api.sudobility.com/resources/svgr/zh-hant/data",
+    );
   });
 
   it("throws on a non-2xx upstream response", async () => {
@@ -75,18 +77,16 @@ describe("ResourcesForwarder", () => {
       app: "music",
       fetchImpl,
     });
-
-    await expect(forwarder.list("en")).rejects.toThrow(/502/);
+    await expect(forwarder.data("en")).rejects.toThrow(/502/);
   });
 
-  it("coerces a malformed body into an empty list", async () => {
+  it("coerces a malformed body into empty sections", async () => {
     const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ nope: true }));
     const forwarder = new ResourcesForwarder({
       baseUrl: "https://api.sudobility.com",
       app: "music",
       fetchImpl,
     });
-
-    expect(await forwarder.list("en")).toEqual({ resources: [] });
+    expect(await forwarder.data("en")).toEqual({ sections: [] });
   });
 });

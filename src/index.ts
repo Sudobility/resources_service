@@ -1,19 +1,31 @@
 /**
  * @sudobility/resources_service
  *
- * Thin backend-shared library for the Sudobility resources catalog:
- *  - the wire DTOs (`Resource`, `ResourceInput`, `ResourcePatch`, `ResourceListResponse`)
+ * Thin backend-shared library for the Sudobility resources catalog (the
+ * app → language → section → resource hierarchy):
+ *  - the wire DTOs
  *  - the central Drizzle schema factory (`createResourcesSchema`), used only by sudobility_api
- *  - the server-to-server `ResourcesForwarder` each app API mounts for its own GET /resources
+ *  - the server-to-server `ResourcesForwarder` each app API mounts for its own
+ *    public `GET /api/v1/resources/data` read
  *
- * There is no DB "helper" class here (unlike consumables_service): the table
- * lives in exactly one API, which owns its own queries.
+ * No DB "helper" class (unlike consumables_service): the catalog lives in
+ * exactly one API, which owns its own queries.
  */
 export type {
+  ResourceApp,
   Resource,
+  ResourceSection,
+  ResourceSectionWithResources,
+  ResourceDataResponse,
+  ResourceAppListResponse,
+  ResourceLanguageListResponse,
+  ResourceSectionListResponse,
+  ResourceAppInput,
+  ResourceLanguageInput,
+  ResourceSectionInput,
+  ResourceSectionPatch,
   ResourceInput,
   ResourcePatch,
-  ResourceListResponse,
 } from "./types/index.js";
 
 export {

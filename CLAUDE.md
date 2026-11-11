@@ -25,9 +25,11 @@ cannot hold it; it is server→server, not browser→API).
 ## Conventions
 
 - **Schema factory, consumer owns migrations.** `createResourcesSchema(schema: any)`
-  builds the `resources` table inside a Drizzle schema the consumer supplies
-  (`{ table: pgTable }` or a named `PgSchema`). `schema` is `any` on purpose, to
-  avoid coupling to a drizzle-orm version. Never add migration files here.
+  builds the four hierarchy tables (`resource_apps`, `resource_languages`,
+  `resource_sections`, `resources`) inside a Drizzle schema the consumer
+  supplies. `schema` is `any` on purpose, to avoid coupling to a drizzle-orm
+  version. FKs / ON DELETE CASCADE are owned by sudobility_api's raw DDL. Never
+  add migration files here.
 - **Columns are snake_case; the wire DTO is camelCase.** `sudobility_api` maps
   between them; the forwarder passes JSON through untouched.
 - **The forwarder only reads.** No API key, no writes. It throws on a non-2xx
