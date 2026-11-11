@@ -39,7 +39,7 @@ export class ResourcesForwarder {
     this.path = (config.path ?? "/resources").replace(/\/+$/, "");
     if (!this.fetchImpl) {
       throw new Error(
-        "ResourcesForwarder: no fetch available; pass config.fetchImpl",
+        "ResourcesForwarder: no fetch available; pass config.fetchImpl"
       );
     }
   }
@@ -52,7 +52,7 @@ export class ResourcesForwarder {
    */
   async data(lang: string): Promise<ResourceDataResponse> {
     const url = `${this.baseUrl}${this.path}/${encodeURIComponent(
-      this.app,
+      this.app
     )}/${encodeURIComponent(lang)}/data`;
 
     const controller = new AbortController();
@@ -65,7 +65,7 @@ export class ResourcesForwarder {
       });
       if (!res.ok) {
         throw new Error(
-          `resources upstream responded ${res.status} ${res.statusText}`,
+          `resources upstream responded ${res.status} ${res.statusText}`
         );
       }
       const body = (await res.json()) as ResourceDataResponse;

@@ -37,7 +37,7 @@ export function createResourcesSchema(schema: any) {
       lang: varchar("lang", { length: 16 }).notNull(),
       created_at: timestamp("created_at").defaultNow().notNull(),
     },
-    (t: any) => [primaryKey({ columns: [t.app, t.lang] })],
+    (t: any) => [primaryKey({ columns: [t.app, t.lang] })]
   );
 
   // Sections within an (app, lang). Server-generated uuid id.
@@ -54,7 +54,7 @@ export function createResourcesSchema(schema: any) {
     },
     (t: any) => [
       index("resource_sections_app_lang_idx").on(t.app, t.lang, t.sort_order),
-    ],
+    ]
   );
 
   // Resources (tiles) within a section. Server-generated uuid id.
@@ -72,9 +72,7 @@ export function createResourcesSchema(schema: any) {
       created_at: timestamp("created_at").defaultNow().notNull(),
       updated_at: timestamp("updated_at").defaultNow().notNull(),
     },
-    (t: any) => [
-      index("resources_section_idx").on(t.section_id, t.sort_order),
-    ],
+    (t: any) => [index("resources_section_idx").on(t.section_id, t.sort_order)]
   );
 
   return { resourceApps, resourceLanguages, resourceSections, resources };
