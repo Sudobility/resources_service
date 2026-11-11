@@ -34,9 +34,12 @@ cannot hold it; it is server→server, not browser→API).
   between them; the forwarder passes JSON through untouched.
 - **The forwarder only reads.** No API key, no writes. It throws on a non-2xx
   upstream; the mounting API decides how to degrade.
-- **DTOs are duplicated, not imported, by the frontend.** `resources_client`
-  redeclares the small JSON shape rather than depend on this backend package —
-  same decoupling split as consumables.
+- **The wire DTOs live in `@sudobility/types`** (next to the `consumables`
+  contract) — the one source shared by this library, `sudobility_api`, and the
+  frontend `resources_client`. `types/index.ts` here only re-exports them, so
+  existing consumers of this package keep resolving them. Only the Drizzle
+  schema factory (`createResourcesSchema`, needs `drizzle-orm`) and the
+  forwarder stay in this package.
 
 ## Build & test
 

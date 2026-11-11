@@ -1,6 +1,6 @@
 {
   "name": "@sudobility/resources_service",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Thin backend-shared library for the Sudobility resources catalog: shared types, the central Drizzle schema, and a server-to-server forwarder that app APIs mount to proxy reads to api.sudobility.com",
   "type": "module",
   "main": "./dist/index.js",
@@ -39,9 +39,11 @@
   "author": "Sudobility",
   "license": "BUSL-1.1",
   "peerDependencies": {
+    "@sudobility/types": "^1.10.1",
     "drizzle-orm": ">=0.44.0"
   },
   "devDependencies": {
+    "@sudobility/types": "^1.10.1",
     "drizzle-orm": "~0.45.4",
     "vitest": "~4.1.12",
     "@types/bun": "latest",
